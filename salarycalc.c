@@ -6,48 +6,43 @@
 Programa que calcula descontos no salário CLT
 Descontos:
     INSS (cálculo progressivo)
-    IRR (considerar se há dependentes ou não?)
-
+    IRR (considerar se há dependentes ou não)
+    Outros descontos
 */
 
-void inss(float grossSalary)
+int inss(float grossSalary)
 {
     float discount, netSalary;
 
-    /*
-    Salário mínimo: R$ 1.045,00	7,5% = 78.38
-    De R$ 1.045,01 a R$ 2.089,60	9% = 94.01
-    De R$ 2.089,61 a R$ 3.134,40	12% = 125.38
-    De R$ 3.134,41 a R$ 6.101,06	14% = x 
-    Acima: R$ 713,10
-
-    Ex: salário 2.300
-    1ª faixa salarial: 1.045,00 x 0,075 = 78,38
-    2ª faixa salarial: [2.089,60 - 1.045,00] x 0,09 = 1.044,60 x 0,09 = 94,01
-    Faixa que atinge o salário: [2.300,00 - 2.089,60] x 0,12 = 210,40 x 0,12 = 25,25
-    Total a recolher: 25,25 + 94,01 + 78,38 = 197,64
-    R$ 2.102,36 (R$ 2.300,00 - R$ 197,64)    
-    */
-
-    if (grossSalary <= 1045)
+    if (grossSalary <= 1045) //7,5%
     {
         discount = grossSalary * 0.075;
     }
-    else if (grossSalary > 6101.06)
+    else if (grossSalary > 6101.06) // 713,10
     {
         discount = 713.10;
     }
-    else if (grossSalary > 1045 && grossSalary <= 2089.6)
+    else if (grossSalary > 1045 && grossSalary <= 2089.6) //9%
     {
         discount = ((grossSalary - 1045) * 0.09) + 78.38;
     }
+    else if (grossSalary > 2089.6 && grossSalary <= 3134.4) //12%
+    {
+        discount = ((grossSalary - 2089.6) * 0.12) + 172.39;
+    }
+    else if (grossSalary > 3134.4 && grossSalary <= 6101.06) //14%
+    {
+        discount = ((grossSalary - 3134.4) * 0.14) + 297.79;
+    }
 
     netSalary = grossSalary - discount;
-    printf("\n%.2f\n", netSalary);
+
+    return netSalary;
 }
 
-int irrf(float grossSalary)
+int irrf(float netSalary, int dependents)
 {
+    float calcBase, discount;
     /*
     Base de cálculo (R$)	Alíquota (%)	Parcela dedutível (R$)
     Até 1.903,98	0%	0,00
@@ -56,16 +51,54 @@ int irrf(float grossSalary)
     De 3.751,06 até 4.664,68	22,5%	636,13
     Acima de 4.664,69	27,5%	869,36
     return 0;
-    R$ 189,59 por dependente
+    R$ 189,59 por dependente (calcular antes)
     */
+
+    //Base de cálculo dependendo do número de dependentes
+    calcBase = netSalary - dependents * 189.59;
+
+    if (calcBase >= 1903.99 && calcBase <= 2826.65)
+    {
+        discount = calcBase * 0.075 - 142.80;
+    }
+    else if (calcBase >= 2826.66 && calcBase <= 3751.05)
+    {
+        discount = calcBase * 0.15 - 354.8;
+    }
+    else if (calcBase >= 3751.06 && calcBase <= 4664.68)
+    {
+        discount = calcBase * 0.225 - 354.8;
+    }
+    else if (calcBase > 4664.69)
+    {
+        discount = calcBase * 0.275 - 869.36;
+    }
+
+    netSalary = netSalary - discount;
+
+    return netSalary;
 }
 
 int main()
 {
-    float grossSalary;
-    printf("\nInsira o valor do salário bruto: ");
+    int dependents;
+    float grossSalary, netSalary;
+    printf("\nInsira o valor do salário bruto (ex: 1935.50): ");
     scanf("%f", &grossSalary);
-    inss(grossSalary);
+
+    do
+    {
+        printf("\nInsira o número de dependentes: ");
+        scanf("%d", &dependents);
+        if (dependents < 0 || dependents > 20)
+        {
+            printf("\nNúmero inválido. Insira apenas números inteiros de 1 a 20.\n");
+        }
+
+    } while (dependents < 0 || dependents > 20);
+
+    netSalary = inss(grossSalary);
+    irrf(netSalary, dependents);
 
     return 0;
 }
