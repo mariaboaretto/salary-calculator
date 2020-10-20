@@ -71,14 +71,14 @@ float inss(float grossSalary)
 float irrf(float calcBase, int dependents)
 {
     float discountIRRF;
-   
+
     calcBase = calcBase - (dependents * 189.59);
-    
+
     if (calcBase < 1903.99)
     {
         discountIRRF = 0;
     }
-    
+
     else if (calcBase >= 1903.99 && calcBase <= 2826.65)
     {
         discountIRRF = (calcBase * 0.075) - 142.80;
@@ -110,41 +110,154 @@ float otherInput()
         {
             printf("\nValor inválido. Insira números maiores do que 0.\n");
         }
-        
+
     } while (discountOthers < 0);
-    
 
     return discountOthers;
 }
 
-void results(float discountINSS, float discountIRRF, float discountOthers, float grossSalary)
+void resultsHeader()
 {
+    int columns = 32;
+    int lines = 3;
 
+    printf("\n");
+
+    //Percorrendo as linhas
+    for (int i = 1; i <= lines; i++)
+    {
+        //Percorrendo as colunas
+        for (int j = 1; j < columns; j++)
+        {
+            //Se for 1ª, 7ª ou 9ª linha
+            if (i == 1 || i == lines)
+            {
+                if (j >= 1 || j <= columns)
+                {
+                    printf("-");
+                }
+            }
+            else
+            {
+                if (j == 4)
+                {
+                    printf("Descontos");
+                }
+                else if (j == 16)
+                {
+                    printf("Valor");
+                }
+                else
+                {
+                    printf(" ");
+                }
+            }
+        }
+
+        printf("\n");
+    }
+}
+
+void resultsDisplay(float grossSalary, float discountINSS, float discountIRRF, float discountOthers)
+{
+    int lines = 6;
+    int columns = 32;
+
+    for (int i = 1; i <= lines; i++)
+    {
+        for (int j = 1; j <= columns; j++)
+        {
+            if (i == 4 || i == lines)
+            {
+                if (j >= 1 || j <= columns)
+                {
+                    printf("-");
+                }
+            }
+            else if (i == 1)
+            {
+                if (j == 4)
+                {
+                    printf("INSS");
+                }
+                else if (j == 20)
+                {
+                    printf("-%.2f", discountINSS);
+                }
+                else
+                {
+                    printf(" ");
+                }
+            }
+            else if (i == 2)
+            {
+                if (j == 4)
+                {
+                    printf("IRFF");
+                }
+                else if (j == 20)
+                {
+                    printf("-%.2f", discountIRRF);
+                }
+                else
+                {
+                    printf(" ");
+                }
+            }
+            else if (i == 3)
+            {
+                if (j == 4)
+                {
+                    printf("Outros");
+                }
+                else if (j == 18)
+                {
+                    printf("-%.2f", discountOthers);
+                }
+                else
+                {
+                    printf(" ");
+                }
+            }
+            else
+            {
+                if (j == 4)
+                {
+                    printf("Salário líquido");
+                }
+                else if (j == 10)
+                {
+                    printf("%.2f", grossSalary - discountINSS - discountIRRF - discountOthers);
+                }
+                else
+                {
+                    printf(" ");
+                }
+            }
+        }
+
+        printf("\n");
+    }
+
+    printf("\n");
 }
 
 int main()
 {
     int dependents;
-    float grossSalary, netSalary, discountINSS, discountIRRF, discountOthers, Calcbase;
+    float grossSalary, discountINSS, discountIRRF, discountOthers, Calcbase;
 
-    grossSalary = salaryInput();//Recebendo input do salário
-    dependents = dependentsInput();//Recebendo input de dependentes
+    grossSalary = salaryInput();    //Recebendo input do salário
+    dependents = dependentsInput(); //Recebendo input de dependentes
     discountOthers = otherInput();
 
-    discountINSS = inss(grossSalary);          //Calculando o desconto do INSS
-    Calcbase = grossSalary - discountINSS;     //Salário para cálculo do desconto do IRRF
-    
+    discountINSS = inss(grossSalary);      //Calculando o desconto do INSS
+    Calcbase = grossSalary - discountINSS; //Salário para cálculo do desconto do IRRF
+
     discountIRRF = irrf(Calcbase, dependents); //Calculando desconto do IRRF + dependentes
-    netSalary = grossSalary - discountOthers - discountINSS - discountIRRF;
-    
-    
-    printf("%.2f, %.2f, %.2f", discountINSS, discountIRRF, discountOthers);
-    
-    
-    printf("\nO salário líquido é: %.2f\n", netSalary);
 
-    
-
+    resultsHeader();
+    resultsDisplay(grossSalary, discountINSS, discountIRRF, discountOthers);
 
     return 0;
 }
